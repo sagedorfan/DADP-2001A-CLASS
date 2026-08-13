@@ -127,6 +127,24 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""crouch"",
+                    ""type"": ""Button"",
+                    ""id"": ""6bdd7f86-a408-451c-98bd-4a2e192eb474"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""5b2e1b05-f862-4bd0-8873-4c762b084d22"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -349,6 +367,50 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""shoot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d58fe22-f5e7-4830-8015-dae07ce77d93"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";player"",
+                    ""action"": ""crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5e642aa8-75e2-4838-95fa-88453a7af95c"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";player"",
+                    ""action"": ""crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""33a49256-8f9b-4716-8150-12deddf16732"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";player"",
+                    ""action"": ""pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""24de91c0-34b2-46bd-83d5-1a70306edc03"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";player"",
+                    ""action"": ""pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -378,6 +440,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_player_Look = m_player.FindAction("Look", throwIfNotFound: true);
         m_player_jump = m_player.FindAction("jump", throwIfNotFound: true);
         m_player_shoot = m_player.FindAction("shoot", throwIfNotFound: true);
+        m_player_crouch = m_player.FindAction("crouch", throwIfNotFound: true);
+        m_player_pickup = m_player.FindAction("pickup", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -462,6 +526,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_player_Look;
     private readonly InputAction m_player_jump;
     private readonly InputAction m_player_shoot;
+    private readonly InputAction m_player_crouch;
+    private readonly InputAction m_player_pickup;
     /// <summary>
     /// Provides access to input actions defined in input action map "player".
     /// </summary>
@@ -489,6 +555,14 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "player/shoot".
         /// </summary>
         public InputAction @shoot => m_Wrapper.m_player_shoot;
+        /// <summary>
+        /// Provides access to the underlying input action "player/crouch".
+        /// </summary>
+        public InputAction @crouch => m_Wrapper.m_player_crouch;
+        /// <summary>
+        /// Provides access to the underlying input action "player/pickup".
+        /// </summary>
+        public InputAction @pickup => m_Wrapper.m_player_pickup;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -527,6 +601,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @shoot.started += instance.OnShoot;
             @shoot.performed += instance.OnShoot;
             @shoot.canceled += instance.OnShoot;
+            @crouch.started += instance.OnCrouch;
+            @crouch.performed += instance.OnCrouch;
+            @crouch.canceled += instance.OnCrouch;
+            @pickup.started += instance.OnPickup;
+            @pickup.performed += instance.OnPickup;
+            @pickup.canceled += instance.OnPickup;
         }
 
         /// <summary>
@@ -550,6 +630,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @shoot.started -= instance.OnShoot;
             @shoot.performed -= instance.OnShoot;
             @shoot.canceled -= instance.OnShoot;
+            @crouch.started -= instance.OnCrouch;
+            @crouch.performed -= instance.OnCrouch;
+            @crouch.canceled -= instance.OnCrouch;
+            @pickup.started -= instance.OnPickup;
+            @pickup.performed -= instance.OnPickup;
+            @pickup.canceled -= instance.OnPickup;
         }
 
         /// <summary>
@@ -631,5 +717,19 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnShoot(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "crouch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCrouch(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "pickup" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPickup(InputAction.CallbackContext context);
     }
 }

@@ -1,15 +1,16 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.DebugUI;
 public class FPController : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
-    public float gravity = -9.81f; 
-    // Controls the downward force applied to the player.The value is negative because gravity pulls the player down.
+    public float gravity = -9.81f; // Controls the downward force applied to the player.The value is negative because gravity pulls the player down.
 public float jumpHeight = 1.5f;
     [Header("Look Settings")]
     public Transform cameraTransform;
-    public float lookSensitivity = 0.5f;
+    public float lookSensitivity = 2f;
     public float verticalLookLimit = 90f;
     [Header("Shooting")]
     public GameObject bulletPrefab;
@@ -20,11 +21,17 @@ public float jumpHeight = 1.5f;
     public float standHeight = 2f;
     public float crouchSpeed = 2.5f;
     private float originalMoveSpeed;
+    [Header("Pickup Settings")]
+    public float pickupRange = 3f;
+    public Transform holdPoint;
+    private PickUpObject heldObject;
+    [Header("Throw Settings")]
+    public float throwForce = 10f;
+    public float throwUpwardBoost = 1f;
     private CharacterController controller;
     private Vector2 moveInput;
     private Vector2 lookInput;
-    private Vector3 velocity; 
-    // Stores the player's current vertical movement, including gravity.
+    private Vector3 velocity; // Stores the player's current vertical movement, including gravity.
 private float verticalRotation = 0f;
     // Awake runs once when the GameObject is first loaded.
     private void Awake()
@@ -38,6 +45,10 @@ private float verticalRotation = 0f;
     {
         HandleMovement();
         HandleLook();
+        if (heldObject != null)
+        {
+            heldObject.MoveToHoldPoint(holdPoint.position);
+        }
     }
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -98,11 +109,9 @@ private float verticalRotation = 0f;
     }
     public void OnJump(InputAction.CallbackContext context)
     {
-        if (context.performed && controller.isGrounded) 
-            // Check that the Jump action was successfully performed and that the player is currently standing on the ground.
+        if (context.performed && controller.isGrounded) // Check that the Jump action was successfully performed and that the player is currently standing on the ground.
     {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); 
-            // Calculates the upward speed needed for the player to reach the chosen jump height while accounting for gravity.
+            velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity); // Calculates the upward speed needed for the player to reach the chosen jump height while accounting for gravity.
     }
     }
     public void OnShoot(InputAction.CallbackContext context)
@@ -124,9 +133,55 @@ private float verticalRotation = 0f;
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
             if (rb != null)
             {
-                rb.AddForce(gunPoint.forward * bulletForce); 
-                // Adjust force value as needed
+                rb.AddForce(gunPoint.forward * bulletForce); // Adjust force value as needed
             }
         }
+    }
+    public void OnCrouch(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            controller.height = crouchHeight;
+            moveSpeed = crouchSpeed;
+        }
+        else if (context.canceled)
+        {
+            controller.height = standHeight;
+            moveSpeed = originalMoveSpeed;
+        }
+    }
+    public void OnPickUp(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+        if (heldObject == null)
+        {
+            Ray ray = new Ray(cameraTransform.position,
+            cameraTransform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit, pickupRange))
+            {
+                PickUpObject pickUp =
+                hit.collider.GetComponent<PickUpObject>();
+                if (pickUp != null)
+                {
+                    pickUp.PickUp(holdPoint);
+                    heldObject = pickUp;
+                }
+            }
+        }
+        else
+        {
+            heldObject.Drop();
+            heldObject = null;
+        }
+    }
+    public void OnThrow(InputAction.CallbackContext context)
+    {
+        if (!context.performed) return;
+        if (heldObject == null) return;
+        Vector3 dir = cameraTransform.forward;
+        Vector3 impulse = dir * throwForce + Vector3.up *
+        throwUpwardBoost;
+        heldObject.Throw(impulse);
+        heldObject = null;
     }
 }
