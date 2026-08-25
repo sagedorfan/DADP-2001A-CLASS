@@ -145,6 +145,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Fire"",
+                    ""type"": ""Button"",
+                    ""id"": ""01122e04-a5c5-4c55-8fc6-b88024fd9554"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -411,6 +420,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""pickup"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aeb73c8a-3889-4dc6-96e8-65a9f61cccd1"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";player"",
+                    ""action"": ""Fire"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -442,6 +462,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_player_shoot = m_player.FindAction("shoot", throwIfNotFound: true);
         m_player_crouch = m_player.FindAction("crouch", throwIfNotFound: true);
         m_player_pickup = m_player.FindAction("pickup", throwIfNotFound: true);
+        m_player_Fire = m_player.FindAction("Fire", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -528,6 +549,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_player_shoot;
     private readonly InputAction m_player_crouch;
     private readonly InputAction m_player_pickup;
+    private readonly InputAction m_player_Fire;
     /// <summary>
     /// Provides access to input actions defined in input action map "player".
     /// </summary>
@@ -563,6 +585,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "player/pickup".
         /// </summary>
         public InputAction @pickup => m_Wrapper.m_player_pickup;
+        /// <summary>
+        /// Provides access to the underlying input action "player/Fire".
+        /// </summary>
+        public InputAction @Fire => m_Wrapper.m_player_Fire;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -607,6 +633,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @pickup.started += instance.OnPickup;
             @pickup.performed += instance.OnPickup;
             @pickup.canceled += instance.OnPickup;
+            @Fire.started += instance.OnFire;
+            @Fire.performed += instance.OnFire;
+            @Fire.canceled += instance.OnFire;
         }
 
         /// <summary>
@@ -636,6 +665,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @pickup.started -= instance.OnPickup;
             @pickup.performed -= instance.OnPickup;
             @pickup.canceled -= instance.OnPickup;
+            @Fire.started -= instance.OnFire;
+            @Fire.performed -= instance.OnFire;
+            @Fire.canceled -= instance.OnFire;
         }
 
         /// <summary>
@@ -731,5 +763,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPickup(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Fire" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnFire(InputAction.CallbackContext context);
     }
 }
